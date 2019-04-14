@@ -62,8 +62,8 @@
             "properties": {
                 "pretty-format.formatting": {
                     "type": "boolean",
-                    "default": false,
-                    "description": "Whether to enable/disable formatting."
+                    "default": true,
+                    "description": "Whether to enable formatting."
                 },
                 "pretty-format.brace_line": {
                     "type": "boolean",
@@ -166,11 +166,6 @@
                     "default": false,
                     "description": "If a space should follow a JavaScript function name."
                 },
-                "pretty-format.indent_char": {
-                    "type": "string",
-                    "default": "",
-                    "description": "The string characters to comprise a single indentation. Any string combination is accepted."
-                },
                 "pretty-format.indent_level": {
                     "type": "integer",
                     "default": 0,
@@ -178,7 +173,7 @@
                 },
                 "pretty-format.indent_size": {
                     "type": "integer",
-                    "default": 4,
+                    "default": 0,
                     "description": "The number of 'inchar' values to comprise a single indentation."
                 },
                 "pretty-format.method_chain": {
