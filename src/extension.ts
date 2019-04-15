@@ -37,7 +37,34 @@ function disposeHandlers() {
  * Build formatter selectors
  */
 const selectors = [
-    "c", "cpp", "csharp", "css", "go", "handlebars", "jade", "java", "javascript", "javascriptreact", "json", "jsonc", "jsx", "less", "log", "perl", "perl6", "php", "python", "r", "ruby", "rust", "scss", "shellscript", "sql", "swift", "tss", "typescript", "typescriptreact", "vb", "xml", "xsl", "yaml"
+    'c',
+    'cpp',
+    'csharp',
+    'css',
+    'go',
+    'handlebars',
+    'html',
+    'jade',
+    'java',
+    'javascript',
+    'javascriptreact',
+    'json',
+    'jsonc',
+    'jsx',
+    'less',
+    'perl',
+    'perl6',
+    'python',
+    'r',
+    'ruby',
+    'rust',
+    'scss',
+    'swift',
+    'typescript',
+    'typescriptreact',
+    'xml',
+    'xsl',
+    'yaml'
 ];
 
 const prettyDiff = (document: TextDocument, range: Range) => {
@@ -46,56 +73,58 @@ const prettyDiff = (document: TextDocument, range: Range) => {
     let output = "";
     const defaults = prettydiff.defaults;
 
-    let indent_size = editor.tabSize;
+    let tabSize = editor.tabSize;
 
-    if (config.indent_size > 0) {
-        indent_size = config.indent_size;
+    if (config.indentSize > 0) {
+        tabSize = config.indentSize;
     }
 
     const rules = {
         mode: 'beautify',
         formatting: config.formatting,
-        brace_line: config.brace_line,
-        brace_padding: config.brace_padding,
-        brace_style: config.brace_style,
+        brace_line: config.braceLine,
+        brace_padding: config.bracePadding,
+        brace_style: config.braceStyle,
         braces: config.braces,
-        comment_line: config.comment_line,
+        comment_line: config.commentLine,
         comments: config.comments,
-        compressed_css: config.compressed_css,
+        compressed_css: config.compressedCss,
         correct: config.correct,
         cssInsertLines: config.cssInsertLines,
-        else_line: config.else_line,
-        end_comma: config.end_comma,
-        force_attribute: config.force_attribute,
-        force_indent: config.force_indent,
-        format_array: config.format_array,
-        format_object: config.format_object,
-        function_name: config.function_name,
-        indent_level: config.indent_level,
-        indent_size: indent_size,
-        method_chain: config.method_chain,
-        never_flatten: config.never_flatten,
-        new_line: config.new_line,
-        no_case_indent: config.no_case_indent,
-        no_lead_zero: config.no_lead_zero,
-        object_sort: config.object_sort,
+        else_line: config.elseLine,
+        end_comma: config.endComma,
+        force_attribute: config.forceAttribute,
+        force_indent: config.forceIndent,
+        format_array: config.formatArray,
+        format_object: config.formatObject,
+        function_name: config.functionName,
+        indent_level: config.indentLevel,
+        indentSize: tabSize,
+        method_chain: config.methodChain,
+        never_flatten: config.neverFlatten,
+        new_line: config.newLine,
+        no_case_indent: config.noCaseIndent,
+        no_lead_zero: config.noLeadZero,
+        object_sort: config.objectSort,
         preserve: config.preserve,
-        preserve_comment: config.preserve_comment,
-        quote_convert: config.quote_convert,
+        preserve_comment: config.preserveComment,
+        quote_convert: config.quoteConvert,
         space: config.space,
-        space_close: config.space_close,
+        space_close: config.spaceSlose,
         styleguide: config.styleguide,
-        tag_merge: config.tag_merge,
-        tag_sort: config.tag_sort,
-        ternary_line: config.ternary_line,
+        tag_merge: config.tagMerge,
+        tag_sort: config.tagSort,
+        ternary_line: config.ternaryLine,
         unformatted: config.unformatted,
-        variable_list: config.variable_list,
+        variable_list: config.variableList,
         vertical: config.vertical,
         wrap: config.wrap
     };
 
     let settings = Object.assign({}, defaults, rules, { source });
     output = prettydiff.mode(settings);
+    settings.end = 0;
+    settings.start = 0;
     result.push(TextEdit.replace(range, output));
     return result;
 };
@@ -106,37 +135,51 @@ export function activate(context: ExtensionContext) {
         languageSelector: DocumentSelector;
     }
 
+    const enabledLanguages = selectors.filter(function (el) {
+        return config.disableLanguages.indexOf(el) < 0;
+    });
+
     function registerFormatter() {
         disposeHandlers();
 
-        rangeFormatterHandler = languages.registerDocumentRangeFormattingEditProvider(selectors, {
-            provideDocumentRangeFormattingEdits: function (document: TextDocument, range: Range) {
-                let end = range.end;
-                if (end.character === 0) {
-                    end = end.translate(-1, Number.MAX_VALUE);
-                } else {
-                    end = end.translate(0, Number.MAX_VALUE);
-                }
+        for (let i in enabledLanguages) {
+            rangeFormatterHandler = languages.registerDocumentRangeFormattingEditProvider(
+                { scheme: 'file', language: enabledLanguages[i] },
+                {
+                    provideDocumentRangeFormattingEdits: function (document: TextDocument, range: Range) {
+                        let end = range.end;
 
-                const rng = new Range(new Position(range.start.line, 0), end);
-                return prettyDiff(document, rng);
-            }
-        });
+                        if (end.character === 0) {
+                            end = end.translate(-1, Number.MAX_VALUE);
+                        } else {
+                            end = end.translate(0, Number.MAX_VALUE);
+                        }
 
-        formatterHandler = languages.registerDocumentFormattingEditProvider(selectors, {
-            provideDocumentFormattingEdits: function (document: TextDocument) {
-                const start = new Position(0, 0);
-                const end = new Position(
-                    document.lineCount - 1,
-                    document.lineAt(document.lineCount - 1).text.length
-                );
-                const rng = new Range(start, end);
-                return prettyDiff(document, rng);
-            }
-        });
+                        const rng = new Range(new Position(range.start.line, 0), end);
+                        return prettyDiff(document, rng);
+                    }
+                });
+
+            formatterHandler = languages.registerDocumentFormattingEditProvider(
+                { scheme: 'file', language: enabledLanguages[i] },
+                {
+                    provideDocumentFormattingEdits: function (document: TextDocument) {
+                        const start = new Position(0, 0);
+
+                        const end = new Position(
+                            document.lineCount - 1,
+                            document.lineAt(document.lineCount - 1).text.length
+                        );
+                        const rng = new Range(start, end);
+                        return prettyDiff(document, rng);
+                    }
+                });
+        }
     }
 
-    registerFormatter();
+    if (config.formatting) {
+        registerFormatter();
+    }
 }
 
 // this method is called when your extension is deactivated

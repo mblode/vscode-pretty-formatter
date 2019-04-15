@@ -2,7 +2,7 @@
     "name": "pretty-format",
     "displayName": "Pretty Format",
     "description": "Pretty code formatter using Pretty Diff Beautify",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "publisher": "mblode",
     "license": "MIT",
     "engines": {
@@ -18,8 +18,8 @@
     },
     "icon": "icon.png",
     "galleryBanner": {
-        "color": "#ffe04b",
-        "theme": "light"
+        "color": "#EEC87F",
+        "theme": "dark"
     },
     "categories": [
         "Formatters",
@@ -65,17 +65,25 @@
                     "default": true,
                     "description": "Whether to enable formatting."
                 },
-                "pretty-format.brace_line": {
+                "pretty-format.disableLanguages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "default": [],
+                    "description": "A list of languages IDs to disable this extension on"
+                },
+                "pretty-format.braceLine": {
                     "type": "boolean",
                     "default": false,
                     "description": "If true an empty line will be inserted after opening curly braces and before closing curly braces."
                 },
-                "pretty-format.brace_padding": {
+                "pretty-format.bracePadding": {
                     "type": "boolean",
                     "default": false,
                     "description": "Inserts a space after the start of a container and before the end of the container if the contents of that container are not indented; such as: conditions, function arguments, and escaped sequences of template strings."
                 },
-                "pretty-format.brace_style": {
+                "pretty-format.braceStyle": {
                     "type": "string",
                     "enum": [
                         "collapse",
@@ -91,7 +99,7 @@
                     "default": false,
                     "description": "Determines if opening curly braces will exist on the same line as their condition or be forced onto a new line."
                 },
-                "pretty-format.comment_line": {
+                "pretty-format.commentLine": {
                     "type": "boolean",
                     "default": false,
                     "description": "If a blank new line should be forced above comments."
@@ -101,7 +109,7 @@
                     "default": false,
                     "description": "This will determine whether comments should always start at position 0 of each line or if comments should be indented according to the code."
                 },
-                "pretty-format.compressed_css": {
+                "pretty-format.compressedCss": {
                     "type": "boolean",
                     "default": false,
                     "description": "If CSS should be beautified in a style where the properties and values are minifed for faster reading of selectors."
@@ -116,12 +124,12 @@
                     "default": false,
                     "description": "Inserts new line characters between every CSS code block."
                 },
-                "pretty-format.else_line": {
+                "pretty-format.elseLine": {
                     "type": "boolean",
                     "default": false,
                     "description": "If else_line is true then the keyword 'else' is forced onto a new line."
                 },
-                "pretty-format.end_comma": {
+                "pretty-format.endComma": {
                     "type": "string",
                     "enum": [
                         "always",
@@ -131,17 +139,17 @@
                     "default": false,
                     "description": "If there should be a trailing comma in arrays and objects. Value multiline only applies to modes beautify and diff."
                 },
-                "pretty-format.force_attribute": {
+                "pretty-format.forceAttribute": {
                     "type": "boolean",
                     "default": false,
                     "description": "If all markup attributes should be indented each onto their own line."
                 },
-                "pretty-format.force_indent": {
+                "pretty-format.forceIndent": {
                     "type": "boolean",
                     "default": false,
                     "description": "Will force indentation upon all content and tags without regard for the creation of new text nodes."
                 },
-                "pretty-format.format_array": {
+                "pretty-format.formatArray": {
                     "type": "string",
                     "enum": [
                         "default",
@@ -151,7 +159,7 @@
                     "default": "default",
                     "description": "Determines if all array indexes should be indented, never indented, or left to the default."
                 },
-                "pretty-format.format_object": {
+                "pretty-format.formatObject": {
                     "type": "string",
                     "enum": [
                         "default",
@@ -161,62 +169,62 @@
                     "default": "default",
                     "description": "Determines if all object keys should be indented, never indented, or left to the default."
                 },
-                "pretty-format.function_name": {
+                "pretty-format.functionName": {
                     "type": "boolean",
                     "default": false,
                     "description": "If a space should follow a JavaScript function name."
                 },
-                "pretty-format.indent_level": {
+                "pretty-format.indentLevel": {
                     "type": "integer",
                     "default": 0,
                     "description": "How much indentation padding should be applied to beautification? This option is internally used for code that requires switching between libraries."
                 },
-                "pretty-format.indent_size": {
+                "pretty-format.indentSize": {
                     "type": "integer",
                     "default": 0,
                     "description": "The number of 'inchar' values to comprise a single indentation."
                 },
-                "pretty-format.method_chain": {
+                "pretty-format.methodChain": {
                     "type": "integer",
-                    "default": 3,
+                    "default": 0,
                     "description": "When to break consecutively chained methods and properties onto separate lines. A negative value disables this option. A value of 0 ensures method chains are never broken."
                 },
-                "pretty-format.never_flatten": {
+                "pretty-format.neverFlatten": {
                     "type": "boolean",
                     "default": false,
                     "description": "If destructured lists in script should never be flattend."
                 },
-                "pretty-format.new_line": {
+                "pretty-format.newLine": {
                     "type": "boolean",
-                    "default": false,
+                    "default": true,
                     "description": "Insert an empty line at the end of output."
                 },
-                "pretty-format.no_case_indent": {
+                "pretty-format.noCaseIndent": {
                     "type": "boolean",
                     "default": false,
                     "description": "If a case statement should receive the same indentation as the containing switch block."
                 },
-                "pretty-format.no_lead_zero": {
+                "pretty-format.noLeadZero": {
                     "type": "boolean",
                     "default": false,
                     "description": "Whether leading 0s in CSS values immediately preceeding a decimal should be removed or prevented."
                 },
-                "pretty-format.object_sort": {
+                "pretty-format.objectSort": {
                     "type": "boolean",
                     "default": false,
                     "description": "Sorts markup attributes and properties by key name in script and style."
                 },
                 "pretty-format.preserve": {
                     "type": "integer",
-                    "default": 0,
+                    "default": 2,
                     "description": "The maximum number of consecutive empty lines to retain."
                 },
-                "pretty-format.preserve_comment": {
+                "pretty-format.preserveComment": {
                     "type": "boolean",
                     "default": false,
                     "description": "Prevent comment reformatting due to option wrap."
                 },
-                "pretty-format.quote_convert": {
+                "pretty-format.quoteConvert": {
                     "type": "string",
                     "enum": [
                         "double",
@@ -231,7 +239,7 @@
                     "default": true,
                     "description": "Inserts a space following the function keyword for anonymous functions."
                 },
-                "pretty-format.space_close": {
+                "pretty-format.spaceClose": {
                     "type": "boolean",
                     "default": false,
                     "description": "Markup self-closing tags end will end with ' />' instead of '/>'."
@@ -253,19 +261,19 @@
                     "default": "none",
                     "description": "Markup self-closing tags end will end with ' />' instead of '/>'."
                 },
-                "pretty-format.tag_merge": {
+                "pretty-format.tagMerge": {
                     "type": "boolean",
                     "default": false,
                     "description": "Allows immediately adjacement start and end markup tags of the same name to be combined into a single self-closing tag."
                 },
-                "pretty-format.tag_sort": {
+                "pretty-format.tagSort": {
                     "type": "boolean",
                     "default": false,
                     "description": "Sort child items of each respective markup parent element."
                 },
-                "pretty-format.ternary_line": {
+                "pretty-format.ternaryLine": {
                     "type": "boolean",
-                    "default": false,
+                    "default": true,
                     "description": "If ternary operators in JavaScript ? and : should remain on the same line."
                 },
                 "pretty-format.unformatted": {
@@ -273,7 +281,7 @@
                     "default": false,
                     "description": "If markup tags should have their insides preserved. This option is only available to markup and does not support child tokens that require a different lexer."
                 },
-                "pretty-format.variable_list": {
+                "pretty-format.variableList": {
                     "type": "string",
                     "enum": [
                         "each",
