@@ -1,8 +1,8 @@
 {
     "name": "pretty-format",
     "displayName": "Pretty Format",
-    "description": "Pretty code formatter using Pretty Diff Beautify",
-    "version": "0.1.0",
+    "description": "VS Code extension to format your code using Pretty Diff",
+    "version": "0.1.1",
     "publisher": "mblode",
     "license": "MIT",
     "engines": {

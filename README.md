@@ -4,7 +4,8 @@
 
 ### VS Code Pretty Format
 
-Pretty code formatter using Pretty Diff Beautify with support for:
+VS Code extension to format your code using Pretty Diff
+
 - HTML, Handlebars, Twig, Jade
 - CSS, SCSS, LESS
 - JavasSript, JavaScript React, JSX
