@@ -13,11 +13,11 @@ import {
 } from 'vscode';
 
 const editor = workspace.getConfiguration('editor');
-const config = workspace.getConfiguration('pretty-format');
+const config = workspace.getConfiguration('pretty-formatter');
 const prettydiff = require('prettydiff');
 
-let formatterHandler: undefined | Disposable;
-let rangeFormatterHandler: undefined | Disposable;
+let formatterHandler: undefined |Disposable;
+let rangeFormatterHandler: undefined |Disposable;
 
 /**
  * Dispose formatters
@@ -67,7 +67,7 @@ const selectors = [
     'yaml'
 ];
 
-const prettyDiff = (document: TextDocument, range: Range) => {
+const prettyDiff = (document : TextDocument, range : Range) => {
     const result = [];
     const source = document.getText(range);
     let output = "";
@@ -81,7 +81,6 @@ const prettyDiff = (document: TextDocument, range: Range) => {
 
     const rules = {
         mode: 'beautify',
-        formatting: config.formatting,
         brace_line: config.braceLine,
         brace_padding: config.bracePadding,
         brace_style: config.braceStyle,
@@ -121,7 +120,7 @@ const prettyDiff = (document: TextDocument, range: Range) => {
         wrap: config.wrap
     };
 
-    let settings = Object.assign({}, defaults, rules, { source });
+    let settings = Object.assign({}, defaults, rules, {source});
     output = prettydiff.mode(settings);
     settings.end = 0;
     settings.start = 0;
@@ -143,37 +142,36 @@ export function activate(context: ExtensionContext) {
         disposeHandlers();
 
         for (let i in enabledLanguages) {
-            rangeFormatterHandler = languages.registerDocumentRangeFormattingEditProvider(
-                { scheme: 'file', language: enabledLanguages[i] },
-                {
-                    provideDocumentRangeFormattingEdits: function (document: TextDocument, range: Range) {
-                        let end = range.end;
+            rangeFormatterHandler = languages.registerDocumentRangeFormattingEditProvider({
+                scheme: 'file',
+                language: enabledLanguages[i]
+            }, {
+                provideDocumentRangeFormattingEdits: function (document: TextDocument, range: Range) {
+                    let end = range.end;
 
-                        if (end.character === 0) {
-                            end = end.translate(-1, Number.MAX_VALUE);
-                        } else {
-                            end = end.translate(0, Number.MAX_VALUE);
-                        }
-
-                        const rng = new Range(new Position(range.start.line, 0), end);
-                        return prettyDiff(document, rng);
+                    if (end.character === 0) {
+                        end = end.translate(-1, Number.MAX_VALUE);
+                    } else {
+                        end = end.translate(0, Number.MAX_VALUE);
                     }
-                });
 
-            formatterHandler = languages.registerDocumentFormattingEditProvider(
-                { scheme: 'file', language: enabledLanguages[i] },
-                {
-                    provideDocumentFormattingEdits: function (document: TextDocument) {
-                        const start = new Position(0, 0);
+                    const rng = new Range(new Position(range.start.line, 0), end);
+                    return prettyDiff(document, rng);
+                }
+            });
 
-                        const end = new Position(
-                            document.lineCount - 1,
-                            document.lineAt(document.lineCount - 1).text.length
-                        );
-                        const rng = new Range(start, end);
-                        return prettyDiff(document, rng);
-                    }
-                });
+            formatterHandler = languages.registerDocumentFormattingEditProvider({
+                scheme: 'file',
+                language: enabledLanguages[i]
+            }, {
+                provideDocumentFormattingEdits: function (document: TextDocument) {
+                    const start = new Position(0, 0);
+
+                    const end = new Position(document.lineCount - 1, document.lineAt(document.lineCount - 1).text.length);
+                    const rng = new Range(start, end);
+                    return prettyDiff(document, rng);
+                }
+            });
         }
     }
 
@@ -183,4 +181,4 @@ export function activate(context: ExtensionContext) {
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() { }
+export function deactivate() {}

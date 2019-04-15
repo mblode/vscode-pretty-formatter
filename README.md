@@ -1,8 +1,8 @@
-<a href="https://marketplace.visualstudio.com/items?itemName=mblode.pretty-format">
-  <img src="https://github.com/mblode/vscode-pretty-format/blob/master/icon.png" alt="VS Code Pretty Format" width=100 height=100>
+<a href="https://marketplace.visualstudio.com/items?itemName=mblode.pretty-formatter">
+  <img src="https://github.com/mblode/vscode-pretty-formatter/blob/master/icon.png?raw=true" alt="VS Code Pretty Format" width=100 height=100>
 </a>
 
-### VS Code Pretty Format
+### VS Code Pretty Formatter
 
 VS Code extension to format your code using Pretty Diff
 
@@ -17,6 +17,6 @@ VS Code extension to format your code using Pretty Diff
 
 ## Installation
 
-Install through Visual Studio Code extensions. Search for `Pretty Format`
+Install through Visual Studio Code extensions. Search for `Pretty Formatter`
 
-[Visual Studio Code Market Place: Pretty Format](https://marketplace.visualstudio.com/items?itemName=mblode.pretty-format)
+[Visual Studio Code Market Place: Pretty Formatter](https://marketplace.visualstudio.com/items?itemName=mblode.pretty-formatter)
