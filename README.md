@@ -10,7 +10,7 @@ VS Code extension to format your code using Pretty Diff
 - CSS, SCSS, LESS
 - JavasSript, JavaScript React, JSX
 - JSON, JSONC
-- C, C++, C#
+- C++, C#
 - Python, R, Ruby, Java, Go, Rust, Perl
 - TypeScript, TypeScript React
 - XML

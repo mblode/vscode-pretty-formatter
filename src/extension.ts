@@ -37,7 +37,6 @@ function disposeHandlers() {
  * Build formatter selectors
  */
 const selectors = [
-    'c',
     'cpp',
     'csharp',
     'css',
@@ -60,10 +59,12 @@ const selectors = [
     'rust',
     'scss',
     'swift',
+    'shellscript',
     'typescript',
     'typescriptreact',
     'xml',
     'xsl',
+    'twig',
     'yaml'
 ];
 
