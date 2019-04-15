@@ -1,5 +1,5 @@
 <a href="https://marketplace.visualstudio.com/items?itemName=mblode.pretty-format">
-  <img src="https://github.com/mblode/pretty-format/blob/master/icon.png?raw=true" alt="" width=100 height=100>
+  <img src="https://github.com/mblode/vscode-pretty-format/blob/master/icon.png" alt="VS Code Pretty Format" width=100 height=100>
 </a>
 
 ### VS Code Pretty Format

@@ -2,7 +2,7 @@
     "name": "pretty-format",
     "displayName": "Pretty Format",
     "description": "VS Code extension to format your code using Pretty Diff",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "publisher": "mblode",
     "license": "MIT",
     "engines": {
@@ -18,7 +18,7 @@
     },
     "icon": "icon.png",
     "galleryBanner": {
-        "color": "#EEC87F",
+        "color": "#4c566a",
         "theme": "dark"
     },
     "categories": [
