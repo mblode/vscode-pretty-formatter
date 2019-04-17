@@ -33,17 +33,9 @@ Install through Visual Studio Code extensions. Search for `Pretty Formatter`
 
 [Visual Studio Code Market Place: Pretty Formatter](https://marketplace.visualstudio.com/items?itemName=mblode.pretty-formatter)
 
-## Contributing to Pretty Formatter
-
-Pull requests are the way to go.
-
 ## Creators
 
 **Matthew Blode**
 
 - [GitHub](https://github.com/mblode)
 - [CodePen](https://codepen.io/mblode)
-
-## License
-
-MIT © [Matthew Blode](http://matthewblode.com)
