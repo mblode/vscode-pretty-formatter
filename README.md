@@ -4,11 +4,11 @@
 
 # VS Code Pretty Formatter
 
+**VS Code extension to format your files using [Pretty Diff](https://prettydiff.com/)**
+
 [![Version](https://vsmarketplacebadge.apphb.com/version-short/mblode.pretty-formatter.svg)](https://marketplace.visualstudio.com/items?itemName=mblode.pretty-formatter)
 [![Installs](https://vsmarketplacebadge.apphb.com/installs-short/mblode.pretty-formatter.svg)](https://marketplace.visualstudio.com/items?itemName=mblode.pretty-formatter)
 [![Ratings](https://vsmarketplacebadge.apphb.com/rating-short/mblode.pretty-formatter.svg)](https://marketplace.visualstudio.com/items?itemName=mblode.pretty-formatter)
-
-**VS Code extension to format your files using [Pretty Diff](https://prettydiff.com/)**
 
 ![Pretty Formatter Demo](https://i.imgur.com/Vhj04dx.gif)
 
