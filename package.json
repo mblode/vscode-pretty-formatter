@@ -2,7 +2,7 @@
     "name": "pretty-formatter",
     "displayName": "Pretty Formatter",
     "description": "VS Code extension to format your code using Pretty Diff",
-    "version": "0.1.4",
+    "version": "0.1.5",
     "publisher": "mblode",
     "license": "MIT",
     "engines": {
