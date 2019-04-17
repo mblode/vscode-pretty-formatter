@@ -10,6 +10,8 @@
 
 **VS Code extension to format your files using [Pretty Diff](https://prettydiff.com/)**
 
+![Pretty Formatter Demo](https://i.imgur.com/Vhj04dx.gif)
+
 ## Is Pretty Formatter for you?
 
 Pretty Formatter VS Code extension provides advanced formatting functionality using Pretty Diff (http://prettydiff.com/) beautify with support for a large variety of programming languages. You can customise all different settings and a rules while adding the best in class formatting support for all these languages that VS Code can't normally format.
