@@ -10,8 +10,6 @@
 [![Installs](https://vsmarketplacebadge.apphb.com/installs-short/mblode.pretty-formatter.svg)](https://marketplace.visualstudio.com/items?itemName=mblode.pretty-formatter)
 [![Ratings](https://vsmarketplacebadge.apphb.com/rating-short/mblode.pretty-formatter.svg)](https://marketplace.visualstudio.com/items?itemName=mblode.pretty-formatter)
 
-![Pretty Formatter Demo](https://i.imgur.com/Vhj04dx.gif)
-
 ## Is Pretty Formatter for you?
 
 Pretty Formatter VS Code extension provides advanced formatting functionality using Pretty Diff (http://prettydiff.com/) beautify with support for a large variety of programming languages. You can customise all different settings and a rules while adding the best in class formatting support for all these languages that VS Code can't normally format.
@@ -33,9 +31,17 @@ Install through Visual Studio Code extensions. Search for `Pretty Formatter`
 
 [Visual Studio Code Market Place: Pretty Formatter](https://marketplace.visualstudio.com/items?itemName=mblode.pretty-formatter)
 
+## How to use
+
+Launch VS Code. Open the Command Palette (Ctrl+Shift+P) and type 'format document' while the file is open.
+
 ## Creators
 
 **Matthew Blode**
 
 - [GitHub](https://github.com/mblode)
 - [CodePen](https://codepen.io/mblode)
+
+## License
+
+MIT © [Matthew Blode](http://matthewblode.com)
