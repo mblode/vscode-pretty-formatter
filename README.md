@@ -16,14 +16,57 @@ Pretty Formatter VS Code extension provides advanced formatting functionality us
 
 ## Supported programming languages
 
-- HTML, Handlebars, Twig, Jade
-- CSS, SCSS, LESS
-- JavasSript, JavaScript React, JSX
-- JSON, JSONC
-- C++, C#
-- Python, R, Ruby, Java, Go, Rust, Perl
-- TypeScript, TypeScript React
-- XML
+Markup
+    - Apache Velocity
+    - ASP Inline Expression
+    - CFML (ColdFusion Markup Language)
+    - Django Inline HTML
+    - Dust.js
+    - EEX Elixir Templates
+    - EJS (Embedded JavaScript) Templates
+    - ERB (Embedded Ruby)
+    - FreeMarker
+    - Genshi
+    - Handlebars
+    - HTL (HTML Templating Language)
+    - HTML
+    - Jekyll
+    - Jinja
+    - JSTL (Java Standard Tag Library)
+    - Liquid
+    - Mustache
+    - Nunjucks
+    - SGML
+    - SilverStripe
+    - Spacebars templates
+    - ThymeLeaf
+    - Underscore Templates (TPL)
+    - Twig
+    - Vapor Leaf
+    - Vash
+    - Volt
+    - XML
+    - XSLT
+
+Script
+    - Flow
+    - JavaScript / ECMAScript
+    - JSON
+    - QML
+    - React JSX
+    - styled-components
+    - styled-jsx
+    - TSS (Titanium Style Sheets)
+    - TSX
+    - TypeScript
+
+Style
+    - CSS
+    - LESS
+    - PostCSS
+    - SCSS (Sass)
+
+45 total languages
 
 ## Installation
 

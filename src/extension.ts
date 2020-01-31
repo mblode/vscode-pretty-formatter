@@ -16,8 +16,8 @@ const editor = workspace.getConfiguration('editor');
 const config = workspace.getConfiguration('pretty-formatter');
 const prettydiff = require('prettydiff');
 
-let formatterHandler: undefined |Disposable;
-let rangeFormatterHandler: undefined |Disposable;
+let formatterHandler: undefined | Disposable;
+let rangeFormatterHandler: undefined | Disposable;
 
 /**
  * Dispose formatters
@@ -37,38 +37,51 @@ function disposeHandlers() {
  * Build formatter selectors
  */
 const selectors = [
-    'cpp',
-    'csharp',
-    'css',
-    'go',
-    'handlebars',
-    'html',
-    'jade',
-    'java',
-    'javascript',
-    'javascriptreact',
-    'json',
-    'jsonc',
-    'jsx',
-    'less',
-    'perl',
-    'perl6',
-    'python',
-    'r',
-    'ruby',
-    'rust',
-    'scss',
-    'swift',
-    'shellscript',
-    'typescript',
-    'typescriptreact',
-    'xml',
-    'xsl',
-    'twig',
-    'yaml'
+    'vtl', //Apache Velocity
+    'aspx', //ASP Inline Expression
+    'cfm', //CFML (ColdFusion Markup Language)
+    'dust', //Dust.js
+    'eex', //EEX Elixir Templates
+    'ejs', //EJS (Embedded JavaScript) Templates
+    'erb', //ERB (Embedded Ruby)
+    'ftl', //FreeMarker
+    'genshi', //Genshi
+    'handlebars', //Handlebars
+    'htl', //HTL (HTML Templating Language)
+    'html', //HTML
+    'jinja', //Jinja
+    'liquid', //Liquid
+    'mustache', //Mustache
+    'nunjucks', //Nunjucks
+    'SilverStripe', //SilverStripe
+    'spacebars', //Spacebars templates
+    'tpl', //Underscore Templates (TPL)
+    'twig', //Twig
+    'leaf', //Vapor Leaf
+    'vash', //Vash
+    'volt', //Volt
+    'xml', //XML
+    'xslt', //XSLT
+    'flow', //Flow
+    'js', //JavaScript
+    'javascript', //JavaScript
+    'javascriptreact', //JavaScript React
+    'typescript', //Typescript
+    'typescriptreact', //Typescript React
+    'json', //JSON
+    'jsonc', //JSONC
+    'qml', //QML
+    'jsx', //React JSX
+    'tss', //TSS (Titanium Style Sheets)
+    'tsx', //TSX
+    'ts', //TypeScript
+    'css', //CSS
+    'less', //LESS
+    'scss', //SCSS
+    'sass' //Sass
 ];
 
-const prettyDiff = (document : TextDocument, range : Range) => {
+const prettyDiff = (document: TextDocument, range: Range) => {
     const result = [];
     let output = "";
     let options = prettydiff.options;
@@ -181,4 +194,4 @@ export function activate(context: ExtensionContext) {
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() { }
