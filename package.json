@@ -2,7 +2,7 @@
     "name": "pretty-formatter",
     "displayName": "Pretty Formatter",
     "description": "VS Code extension to format your code using Pretty Diff",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "publisher": "mblode",
     "license": "MIT",
     "engines": {
@@ -45,11 +45,11 @@
         "test": "npm run compile && node ./node_modules/vscode/bin/test"
     },
     "devDependencies": {
-        "@types/mocha": "^7.0.2",
-        "@types/node": "^12.7.2",
-        "tslint": "^6.1.1",
-        "typescript": "^3.8.3",
-        "vscode": "^1.1.36"
+        "@types/mocha": "^8.0.3",
+        "@types/node": "^14.6.0",
+        "tslint": "^6.1.3",
+        "typescript": "^4.0.2",
+        "vscode": "^1.1.37"
     },
     "dependencies": {
         "prettydiff": "^101.2.6"
