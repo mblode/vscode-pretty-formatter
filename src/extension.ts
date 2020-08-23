@@ -102,7 +102,7 @@ const prettyDiff = (document: TextDocument, range: Range) => {
     options.comments = config.comments;
     options.compressed_css = config.compressedCss;
     options.correct = config.correct;
-    options.cssInsertLines = config.cssInsertLines;
+    options.css_insert_lines = config.cssInsertLines;
     options.else_line = config.elseLine;
     options.end_comma = config.endComma;
     options.force_attribute = config.forceAttribute;
@@ -111,7 +111,7 @@ const prettyDiff = (document: TextDocument, range: Range) => {
     options.format_object = config.formatObject;
     options.function_name = config.functionName;
     options.indent_level = config.indentLevel;
-    options.indentSize = tabSize;
+    options.indent_size = tabSize;
     options.method_chain = config.methodChain;
     options.never_flatten = config.neverFlatten;
     options.new_line = config.newLine;
