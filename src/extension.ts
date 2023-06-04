@@ -72,6 +72,7 @@ const selectors = [
     'jsonc', //JSONC
     'qml', //QML
     'jsx', //React JSX
+    'alloy-tss', //TSS (Titanium Style Sheets)
     'tss', //TSS (Titanium Style Sheets)
     'tsx', //TSX
     'ts', //TypeScript
