@@ -12,16 +12,17 @@
 
 ## Is Pretty Formatter for you?
 
-Pretty Formatter VS Code extension provides advanced formatting functionality using Pretty Diff (http://prettydiff.com/) beautify with support for a large variety of programming languages. You can customise all different settings and a rules while adding the best in class formatting support for all these languages that VS Code can't normally format.
+Pretty Formatter VS Code extension provides advanced formatting functionality using Pretty Diff (<http://prettydiff.com/>) beautify with support for a large variety of programming languages. You can customise all different settings and a rules while adding the best in class formatting support for all these languages that VS Code can't normally format.
 
 ## Supported programming languages
 
 Markup
+
 * Apache Velocity
 * ASP Inline Expression
 * CFML (ColdFusion Markup Language)
 * Django Inline HTML
- * Dust.js
+* Dust.js
 * EEX Elixir Templates
 * EJS (Embedded JavaScript) Templates
 * ERB (Embedded Ruby)
@@ -49,6 +50,7 @@ Markup
 * XSLT
 
 Script
+
 * Flow
 * JavaScript / ECMAScript
 * JSON
@@ -61,6 +63,7 @@ Script
 * TypeScript
 
 Style
+
 * CSS
 * LESS
 * PostCSS
@@ -82,8 +85,8 @@ Launch VS Code. Open the Command Palette (Ctrl+Shift+P) and type 'format documen
 
 **Matthew Blode**
 
-- [GitHub](https://github.com/mblode)
-- [CodePen](https://codepen.io/mblode)
+* [GitHub](https://github.com/mblode)
+* [CodePen](https://codepen.io/mblode)
 
 ## License
 
