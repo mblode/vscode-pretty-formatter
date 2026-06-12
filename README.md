@@ -81,6 +81,20 @@ Install through Visual Studio Code extensions. Search for `Pretty Formatter`
 
 Launch VS Code. Open the Command Palette (Ctrl+Shift+P) and type 'format document' while the file is open.
 
+Pretty Formatter registers itself as a document formatter for the supported languages. This means it can run automatically if you have `editor.formatOnSave` enabled, or if you have selected it as your default formatter for a language. It does **not** reformat anything on its own otherwise — formatting only happens when you explicitly format a document or when VS Code's own format-on-save invokes it.
+
+## Disabling formatting for specific files or languages
+
+If you want to keep the extension installed but prevent it from formatting certain files or languages, use these settings:
+
+* `pretty-formatter.formatting` (boolean, default `true`) — set to `false` to disable the formatter entirely without uninstalling.
+* `pretty-formatter.disableLanguages` (array) — a list of language IDs the extension should ignore, e.g. `["json", "typescript"]`.
+* `pretty-formatter.ignore` (array) — a list of `.prettierignore`-style glob patterns for files that should never be formatted, e.g. `["*.min.js", "dist/**", "package.json"]`.
+
+## Indentation
+
+By default Pretty Formatter follows your editor's `editor.tabSize`. To override the indentation width independently, set `pretty-formatter.indentSize` to the number of spaces you want (a value of `0` falls back to `editor.tabSize`).
+
 ## Creators
 
 **Matthew Blode**
