@@ -75,6 +75,14 @@
                     "default": [],
                     "description": "A list of languages IDs to disable this extension on"
                 },
+                "pretty-formatter.ignore": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "default": [],
+                    "markdownDescription": "A list of glob patterns for files that should never be formatted, similar to a `.prettierignore` file. Patterns are matched against the workspace-relative path, the absolute path, and the file name. Supports `*`, `**`, and `?`. Examples: `*.min.js`, `dist/**`, `src/generated/**/*.ts`, `vendor`."
+                },
                 "pretty-formatter.braceLine": {
                     "type": "boolean",
                     "default": false,
