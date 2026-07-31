@@ -95,13 +95,10 @@ If you want to keep the extension installed but prevent it from formatting certa
 
 By default Pretty Formatter follows your editor's `editor.tabSize`. To override the indentation width independently, set `pretty-formatter.indentSize` to the number of spaces you want (a value of `0` falls back to `editor.tabSize`).
 
-## Creators
-
-**Matthew Blode**
-
-* [GitHub](https://github.com/mblode)
-* [CodePen](https://codepen.io/mblode)
-
 ## License
 
-MIT © [Matthew Blode](http://matthewblode.com)
+MIT
+
+---
+
+Crafted by [<img src="https://matthewblode.com/avatar-circle.png" width="20" align="top" />](https://matthewblode.com) [Matthew Blode](https://matthewblode.com)
