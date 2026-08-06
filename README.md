@@ -8,7 +8,7 @@ Run Format Document in a Twig, Liquid, or Handlebars file, or set it as the defa
 
 <p align="center">
   <a href="https://marketplace.visualstudio.com/items?itemName=mblode.pretty-formatter">
-    <img src="https://img.shields.io/visual-studio-marketplace/v/mblode.pretty-formatter?style=flat&colorA=000000&colorB=000000" />
+    <img src="https://vsmarketplacebadges.dev/version-short/mblode.pretty-formatter.svg?style=flat&colorA=000000&colorB=000000" />
   </a>
   <a href="https://github.com/mblode/vscode-pretty-formatter/blob/master/LICENSE.md">
     <img src="https://img.shields.io/github/license/mblode/vscode-pretty-formatter?style=flat&colorA=000000&colorB=000000" />
