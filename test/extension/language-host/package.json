@@ -1,0 +1,1 @@
+{"name":"pretty-test-languages","publisher":"test","version":"0.0.1","engines":{"vscode":"^1.85.0"},"contributes":{"languages":[{"id":"twig"},{"id":"nunjucks"},{"id":"liquid"},{"id":"eex"},{"id":"ftl"},{"id":"cfml"},{"id":"qml"}]}}

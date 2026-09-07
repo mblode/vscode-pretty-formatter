@@ -1,0 +1,50 @@
+"use strict";
+const parsers = Object.freeze({
+  twig: "twig",
+  html: "twig",
+  jinja: "twig",
+  nunjucks: "twig",
+  volt: "twig",
+  javascript: "babel",
+  js: "babel",
+  javascriptreact: "babel",
+  jsx: "babel",
+  flow: "flow",
+  typescript: "typescript",
+  typescriptreact: "typescript",
+  ts: "typescript",
+  tsx: "typescript",
+  json: "json",
+  jsonc: "jsonc",
+  css: "css",
+  scss: "scss",
+  less: "less",
+  xml: "xml",
+  xslt: "xml",
+  liquid: "liquid-html",
+  handlebars: "glimmer",
+  eex: "template",
+  ejs: "template",
+  erb: "template",
+  aspx: "template",
+  tpl: "template",
+  ftl: "template",
+  cfm: "template",
+  cfml: "template",
+  qml: "qml",
+});
+const languages = Object.keys(parsers);
+function readOptions(config, editor) {
+  return {
+    insertSpaces: editor.insertSpaces,
+    tabSize: config.get("indentSize", 0) || editor.tabSize,
+    wrap: config.get("wrap", 0),
+    forceAttribute: config.get("forceAttribute", false),
+    spaceClose: config.get("spaceClose", false),
+    newLine: config.get("newLine", true),
+    embeddedFormatting: config.get("embeddedFormatting", true),
+    quoteConvert: config.get("quoteConvert", "none"),
+    endComma: config.get("endComma", "none"),
+  };
+}
+module.exports = { parsers, languages, readOptions };

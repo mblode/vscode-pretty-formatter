@@ -1,72 +1,58 @@
-<div align="center">
-
 # Pretty Formatter
 
-**[Pretty Diff](https://prettydiff.com/) as a VS Code document formatter for 38 template, script, and style languages**
+Format Twig and HTML without losing template code, with bundled Prettier parsers for JavaScript, TypeScript, stylesheets, JSON, XML and Liquid. No project configuration, plugins or external runtime are required.
 
-Run Format Document in a Twig, Liquid, or Handlebars file, or set it as the default formatter for a language and let format-on-save handle it.
-
-<p align="center">
-  <a href="https://marketplace.visualstudio.com/items?itemName=mblode.pretty-formatter">
-    <img src="https://vsmarketplacebadges.dev/version-short/mblode.pretty-formatter.svg?style=flat&colorA=000000&colorB=000000" />
-  </a>
-  <a href="https://github.com/mblode/vscode-pretty-formatter/blob/master/LICENSE.md">
-    <img src="https://img.shields.io/github/license/mblode/vscode-pretty-formatter?style=flat&colorA=000000&colorB=000000" />
-  </a>
-</p>
-
-</div>
-
-## Install
-
-```bash
-ext install mblode.pretty-formatter
-```
-
-Paste that into Quick Open (`cmd+P`), or search "Pretty Formatter" in the Extensions panel.
-
-## Quickstart
-
-Open a supported file and run Format Document from the Command Palette (`cmd+shift+P`). To hand a language over to it permanently, add this to your `settings.json`:
+Choose **Format Document With… → Pretty Formatter → Configure Default Formatter**, or configure a language:
 
 ```json
 {
-  "[twig]": {
-    "editor.defaultFormatter": "mblode.pretty-formatter"
-  },
-  "editor.formatOnSave": true
+  "[twig]": { "editor.defaultFormatter": "mblode.pretty-formatter" },
+  "[typescript]": { "editor.defaultFormatter": "mblode.pretty-formatter" }
 }
 ```
 
-Formatting a selection works too, through Format Selection.
+For Twig highlighting, snippets and HTML completion, install [Twig Language 2](https://marketplace.visualstudio.com/items?itemName=mblode.twig-language-2). Both extensions share the Twig formatter. Select one default formatter per language.
 
-## Supported languages
+## Languages
 
-- **Markup and templating:** Apache Velocity, ASP inline expressions, CFML, Dust.js, EEX, EJS, ERB, FreeMarker, Genshi, Handlebars, HTL, HTML, Jinja, Liquid, Mustache, Nunjucks, SilverStripe, Spacebars, Underscore templates, Twig, Vapor Leaf, Vash, Volt, XML, XSLT.
-- **Script:** Flow, JavaScript, React JSX, TypeScript, TSX, JSON, JSONC, QML, Titanium Style Sheets.
-- **Style:** CSS, LESS, SCSS, Sass.
+| Language IDs | Behavior |
+|---|---|
+| `twig`, `html` | Source-preserving Twig/HTML formatter. Conditional attributes, crossing HTML/Twig blocks, raw regions and inline text are preserved. Safe embedded JS/CSS uses Prettier. |
+| `jinja`, `nunjucks`, `volt` | Shared template formatting for compatible delimiters. Expressions retain their source tokens; this is not a complete compiler for these dialects. |
+| `javascript`, `js`, `javascriptreact`, `jsx`, `flow` | Prettier JavaScript/JSX/Flow parsers. |
+| `typescript`, `typescriptreact`, `ts`, `tsx` | Prettier TypeScript parser. |
+| `json`, `jsonc`, `css`, `scss`, `less`, `handlebars` | Corresponding bundled Prettier parsers. |
+| `xml`, `xslt` | Prettier XML plugin, with strict text whitespace preservation. |
+| `liquid` | Shopify's Liquid parser and printer. |
+| `eex`, `ejs`, `erb`, `aspx`, `tpl`, `ftl`, `cfm`, `cfml` | Conservative surrounding HTML indentation. Template spans and CFScript bodies retain their exact bytes; expressions and dialect control-flow layout are not rewritten. |
+| `qml` | Brace indentation only, preserving colon spacing and strings. |
 
-## Settings
+YAML frontmatter remains byte-for-byte unchanged in template documents. Language extensions provide any language IDs not built into VS Code; Pretty Formatter does not take ownership of file associations.
 
-| Setting | Default | Description |
-|---------|---------|-------------|
-| `pretty-formatter.formatting` | `true` | Turn the formatter off without uninstalling. |
-| `pretty-formatter.disableLanguages` | `[]` | Language ids to skip, such as `["json", "typescript"]`. |
-| `pretty-formatter.ignore` | `[]` | Glob patterns never to format, such as `["*.min.js", "dist/**"]`. |
-| `pretty-formatter.indentSize` | `0` | Indent width, where `0` follows the editor's `editor.tabSize`. |
+The old PrettyDiff listing claimed other dialects without reliable parser support. `vtl`, `dust`, `genshi`, `htl`, `mustache`, `SilverStripe`, `spacebars`, `leaf`, `vash`, `alloy-tss`, `tss` and indented `sass` currently have no formatter provider. Python and C# are also unsupported. They are never guessed as JavaScript or HTML. Additional dialects need a real parser and regression evidence before support is restored.
 
-Another 36 Pretty Diff options sit under the same prefix, covering brace style, quote conversion, attribute indentation, comment handling, and wrap width. Changing any of them re-registers the formatter without a window reload.
+## Settings and migration from 0.2.x
 
-## Notes
+Changes apply immediately and respect document, workspace-folder and language overrides.
 
-- Nothing is reformatted on its own. Formatting happens when you run it, or when VS Code's own format-on-save invokes it.
-- Pretty Diff is pinned at 101.2.6, its last release, published September 2019. The bundled beautifier works, but no upstream fixes are coming.
-- Requires VS Code 1.84 or newer.
+- `pretty-formatter.formatting`: enable formatting, default `true`.
+- `pretty-formatter.disableLanguages`: list of language IDs to skip.
+- `pretty-formatter.ignore`: path globs with `*`, `**`, `?`; a bare directory such as `vendor` matches any path segment.
+- `pretty-formatter.indentSize`: `0` uses the editor's current document indentation. Positive values override the width; tabs follow `editor.insertSpaces`.
+- `pretty-formatter.wrap`: preferred width; `0` uses 80 for Prettier and retains Twig/HTML attribute wrapping.
+- `pretty-formatter.forceAttribute`, `spaceClose`: Twig/HTML attribute layout.
+- `pretty-formatter.quoteConvert`: `single` or `double` for Prettier code; Twig literals retain their quotes.
+- `pretty-formatter.endComma`: `always` or `never` for applicable Prettier code; `none` uses parser defaults.
+- `pretty-formatter.newLine`: final-newline preference where it does not modify literal template text.
+- `pretty-formatter.embeddedFormatting`: safe embedded JavaScript/CSS in Twig/HTML, default `true`.
+- `pretty-formatter.formatTimeout`: worker limit in milliseconds, default 5000.
 
-## License
+Other PrettyDiff settings are deprecated and explicitly marked unused in VS Code. Version 0.3.0 removes PrettyDiff, so supported code languages adopt Prettier layout defaults. It never loads project Prettier configuration or third-party workspace plugins.
 
-MIT
+Formatting runs in a disposable worker with cancellation, stale-document checks and a 2 MiB limit. A parser error or timeout returns no edits and a diagnostic in **Output → Pretty Formatter**. Twig selections use full-document context. Other parsers may require a larger syntax unit; when an edit would escape the selection, use Format Document.
 
----
+VS Code 1.85+ desktop and remote extension hosts are supported, including untrusted workspaces and non-file documents. A browser-only extension host is not included.
 
-Crafted by [<img src="https://blode.co/avatar-circle.png" width="20" align="top" />](https://blode.co) [Matthew Blode](https://blode.co)
+## Development
+
+Use Node 22. Run `npm ci`, `composer install --working-dir=test/php`, `npm test`, `npm run test:oracle`, `npm run package`, and `npm run test:extension`. PHP is used only for the independent Twig lexer/render tests. CI tests the extracted VSIX in current stable VS Code. The regression corpus comes from the [three-extension audit](https://github.com/mblode/vscode-twig-language-2/blob/master/docs/formatter-audit.md).

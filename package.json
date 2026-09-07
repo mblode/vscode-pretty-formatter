@@ -1,317 +1,442 @@
 {
-    "name": "pretty-formatter",
-    "displayName": "Pretty Formatter",
-    "description": "VS Code extension to format your code using Pretty Diff",
-    "version": "0.2.3",
-    "publisher": "mblode",
-    "license": "MIT",
-    "engines": {
-        "vscode": "^1.84.0"
-    },
-    "homepage": "https://github.com/mblode/vscode-pretty-formatter",
-    "bugs": {
-        "url": "https://github.com/mblode/vscode-pretty-formatter/issues"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/mblode/vscode-pretty-formatter.git"
-    },
-    "icon": "icon.png",
-    "galleryBanner": {
-        "color": "#4c566a",
-        "theme": "dark"
-    },
-    "categories": [
-        "Formatters",
-        "Programming Languages",
-        "Snippets",
-        "Other"
-    ],
-    "keywords": [
-        "html",
-        "javascript",
-        "format",
-        "beautify"
-    ],
-    "activationEvents": [],
-    "main": "./out/extension.js",
-    "scripts": {
-        "vscode:prepublish": "npm run compile",
-        "compile": "tsc -p ./",
-        "watch": "tsc -watch -p ./",
-        "lint": "eslint src --ext ts"
-    },
-    "devDependencies": {
-        "@types/mocha": "^10.0.3",
-        "@types/node": "20.x",
-        "@types/request-promise": "^4.1.50",
-        "@types/vscode": "^1.84.0",
-        "@typescript-eslint/eslint-plugin": "^6.10.0",
-        "@typescript-eslint/parser": "^6.10.0",
-        "@vscode/test-electron": "^2.3.6",
-        "eslint": "^8.53.0",
-        "glob": "^10.3.10",
-        "mocha": "^10.2.0",
-        "typescript": "^5.2.2"
-    },
-    "dependencies": {
-        "prettydiff": "^101.2.6"
-    },
-    "contributes": {
-        "configuration": {
-            "type": "object",
-            "title": "Pretty Formatter",
-            "properties": {
-                "pretty-formatter.formatting": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Whether to enable formatting."
-                },
-                "pretty-formatter.disableLanguages": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "default": [],
-                    "description": "A list of languages IDs to disable this extension on"
-                },
-                "pretty-formatter.ignore": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "default": [],
-                    "markdownDescription": "A list of glob patterns for files that should never be formatted, similar to a `.prettierignore` file. Patterns are matched against the workspace-relative path, the absolute path, and the file name. Supports `*`, `**`, and `?`. Examples: `*.min.js`, `dist/**`, `src/generated/**/*.ts`, `vendor`."
-                },
-                "pretty-formatter.braceLine": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "If true an empty line will be inserted after opening curly braces and before closing curly braces."
-                },
-                "pretty-formatter.bracePadding": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Inserts a space after the start of a container and before the end of the container if the contents of that container are not indented; such as: conditions, function arguments, and escaped sequences of template strings."
-                },
-                "pretty-formatter.braceStyle": {
-                    "type": "string",
-                    "enum": [
-                        "collapse",
-                        "collapse-preserve-inline",
-                        "expand",
-                        "none"
-                    ],
-                    "default": "none",
-                    "description": "Emulates JSBeautify's brace_style option using existing Pretty Diff options."
-                },
-                "pretty-formatter.braces": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Determines if opening curly braces will exist on the same line as their condition or be forced onto a new line."
-                },
-                "pretty-formatter.commentLine": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "If a blank new line should be forced above comments."
-                },
-                "pretty-formatter.comments": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "This will determine whether comments should always start at position 0 of each line or if comments should be indented according to the code."
-                },
-                "pretty-formatter.compressedCss": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "If CSS should be beautified in a style where the properties and values are minifed for faster reading of selectors."
-                },
-                "pretty-formatter.correct": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Automatically correct some sloppiness in code."
-                },
-                "pretty-formatter.cssInsertLines": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Inserts new line characters between every CSS code block."
-                },
-                "pretty-formatter.elseLine": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "If else_line is true then the keyword 'else' is forced onto a new line."
-                },
-                "pretty-formatter.endComma": {
-                    "type": "string",
-                    "enum": [
-                        "always",
-                        "never",
-                        "none"
-                    ],
-                    "default": false,
-                    "description": "If there should be a trailing comma in arrays and objects. Value multiline only applies to modes beautify and diff."
-                },
-                "pretty-formatter.forceAttribute": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "If all markup attributes should be indented each onto their own line."
-                },
-                "pretty-formatter.forceIndent": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Will force indentation upon all content and tags without regard for the creation of new text nodes."
-                },
-                "pretty-formatter.formatArray": {
-                    "type": "string",
-                    "enum": [
-                        "default",
-                        "indent",
-                        "inline"
-                    ],
-                    "default": "default",
-                    "description": "Determines if all array indexes should be indented, never indented, or left to the default."
-                },
-                "pretty-formatter.formatObject": {
-                    "type": "string",
-                    "enum": [
-                        "default",
-                        "indent",
-                        "inline"
-                    ],
-                    "default": "default",
-                    "description": "Determines if all object keys should be indented, never indented, or left to the default."
-                },
-                "pretty-formatter.functionName": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "If a space should follow a JavaScript function name."
-                },
-                "pretty-formatter.indentLevel": {
-                    "type": "integer",
-                    "default": 0,
-                    "description": "How much indentation padding should be applied to beautification? This option is internally used for code that requires switching between libraries."
-                },
-                "pretty-formatter.indentSize": {
-                    "type": "integer",
-                    "default": 0,
-                    "description": "The number of 'inchar' values to comprise a single indentation."
-                },
-                "pretty-formatter.methodChain": {
-                    "type": "integer",
-                    "default": 0,
-                    "description": "When to break consecutively chained methods and properties onto separate lines. A negative value disables this option. A value of 0 ensures method chains are never broken."
-                },
-                "pretty-formatter.neverFlatten": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "If destructured lists in script should never be flattend."
-                },
-                "pretty-formatter.newLine": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Insert an empty line at the end of output."
-                },
-                "pretty-formatter.noCaseIndent": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "If a case statement should receive the same indentation as the containing switch block."
-                },
-                "pretty-formatter.noLeadZero": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Whether leading 0s in CSS values immediately preceeding a decimal should be removed or prevented."
-                },
-                "pretty-formatter.objectSort": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Sorts markup attributes and properties by key name in script and style."
-                },
-                "pretty-formatter.preserve": {
-                    "type": "integer",
-                    "default": 2,
-                    "description": "The maximum number of consecutive empty lines to retain."
-                },
-                "pretty-formatter.preserveComment": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Prevent comment reformatting due to option wrap."
-                },
-                "pretty-formatter.quoteConvert": {
-                    "type": "string",
-                    "enum": [
-                        "double",
-                        "none",
-                        "single"
-                    ],
-                    "default": "none",
-                    "description": "If the quotes of script strings or markup attributes should be converted to single quotes or double quotes."
-                },
-                "pretty-formatter.space": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Inserts a space following the function keyword for anonymous functions."
-                },
-                "pretty-formatter.spaceClose": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Markup self-closing tags end will end with ' />' instead of '/>'."
-                },
-                "pretty-formatter.styleguide": {
-                    "type": "string",
-                    "enum": [
-                        "airbnb",
-                        "crockford",
-                        "google",
-                        "jquery",
-                        "jslint",
-                        "mediawiki",
-                        "mrdoob",
-                        "none",
-                        "standard",
-                        "yandex"
-                    ],
-                    "default": "none",
-                    "description": "Markup self-closing tags end will end with ' />' instead of '/>'."
-                },
-                "pretty-formatter.tagMerge": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Allows immediately adjacement start and end markup tags of the same name to be combined into a single self-closing tag."
-                },
-                "pretty-formatter.tagSort": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Sort child items of each respective markup parent element."
-                },
-                "pretty-formatter.ternaryLine": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "If ternary operators in JavaScript ? and : should remain on the same line."
-                },
-                "pretty-formatter.unformatted": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "If markup tags should have their insides preserved. This option is only available to markup and does not support child tokens that require a different lexer."
-                },
-                "pretty-formatter.variableList": {
-                    "type": "string",
-                    "enum": [
-                        "each",
-                        "list",
-                        "none"
-                    ],
-                    "default": "none",
-                    "description": "If consecutive JavaScript variables should be merged into a comma separated list or if variables in a list should be separated."
-                },
-                "pretty-formatter.vertical": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "If lists of assignments and properties should be vertically aligned. This option is not used with the markup lexer."
-                },
-                "pretty-formatter.wrap": {
-                    "type": "integer",
-                    "default": 0,
-                    "description": "Character width limit before applying word wrap. A 0 value disables this option. A negative value concatenates script strings."
-                }
-            }
+  "name": "pretty-formatter",
+  "displayName": "Pretty Formatter",
+  "description": "Safe Twig and HTML formatting, with bundled Prettier for JavaScript, TypeScript, CSS, JSON, XML and Liquid.",
+  "version": "0.3.0",
+  "publisher": "mblode",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "homepage": "https://github.com/mblode/vscode-pretty-formatter",
+  "bugs": {
+    "url": "https://github.com/mblode/vscode-pretty-formatter/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mblode/vscode-pretty-formatter.git"
+  },
+  "icon": "icon.png",
+  "galleryBanner": {
+    "color": "#4c566a",
+    "theme": "dark"
+  },
+  "categories": [
+    "Formatters",
+    "Programming Languages",
+    "Snippets",
+    "Other"
+  ],
+  "keywords": [
+    "html",
+    "javascript",
+    "format",
+    "beautify"
+  ],
+  "activationEvents": [
+    "onLanguage:twig",
+    "onLanguage:html",
+    "onLanguage:jinja",
+    "onLanguage:nunjucks",
+    "onLanguage:volt",
+    "onLanguage:javascript",
+    "onLanguage:js",
+    "onLanguage:javascriptreact",
+    "onLanguage:jsx",
+    "onLanguage:flow",
+    "onLanguage:typescript",
+    "onLanguage:typescriptreact",
+    "onLanguage:ts",
+    "onLanguage:tsx",
+    "onLanguage:json",
+    "onLanguage:jsonc",
+    "onLanguage:css",
+    "onLanguage:scss",
+    "onLanguage:less",
+    "onLanguage:xml",
+    "onLanguage:xslt",
+    "onLanguage:liquid",
+    "onLanguage:handlebars",
+    "onLanguage:eex",
+    "onLanguage:ejs",
+    "onLanguage:erb",
+    "onLanguage:aspx",
+    "onLanguage:tpl",
+    "onLanguage:ftl",
+    "onLanguage:cfm",
+    "onLanguage:cfml",
+    "onLanguage:qml"
+  ],
+  "main": "./extension/index.js",
+  "scripts": {
+    "start": "npm run build",
+    "build": "node scripts/build.mjs",
+    "watch": "node scripts/build.mjs --watch",
+    "test": "node --test test/*.test.js",
+    "test:extension": "node test/extension/run.cjs",
+    "package": "npm run build && vsce package --no-dependencies",
+    "vscode:prepublish": "npm run build",
+    "test:oracle": "TWIG_ORACLE_REQUIRED=1 node --test test/oracle.test.js"
+  },
+  "devDependencies": {
+    "@vscode/test-electron": "3.1.0",
+    "@vscode/vsce": "3.9.2",
+    "esbuild": "0.28.2"
+  },
+  "dependencies": {
+    "prettier": "3.9.6",
+    "@prettier/plugin-xml": "3.4.2",
+    "@shopify/prettier-plugin-liquid": "1.11.0"
+  },
+  "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "Pretty Formatter",
+      "properties": {
+        "pretty-formatter.formatting": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to enable formatting.",
+          "scope": "language-overridable"
+        },
+        "pretty-formatter.disableLanguages": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "A list of languages IDs to disable this extension on",
+          "scope": "language-overridable"
+        },
+        "pretty-formatter.ignore": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "markdownDescription": "A list of glob patterns for files that should never be formatted, similar to a `.prettierignore` file. Patterns are matched against the workspace-relative path, the absolute path, and the file name. Supports `*`, `**`, and `?`. Examples: `*.min.js`, `dist/**`, `src/generated/**/*.ts`, `vendor`.",
+          "scope": "language-overridable"
+        },
+        "pretty-formatter.braceLine": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true an empty line will be inserted after opening curly braces and before closing curly braces.",
+          "scope": "language-overridable",
+          "deprecationMessage": "Unused since 0.3.0. PrettyDiff has been replaced with bundled parsers. See README for supported options."
+        },
+        "pretty-formatter.bracePadding": {
+          "type": "boolean",
+          "default": false,
+          "description": "Inserts a space after the start of a container and before the end of the container if the contents of that container are not indented; such as: conditions, function arguments, and escaped sequences of template strings.",
+          "scope": "language-overridable",
+          "deprecationMessage": "Unused since 0.3.0. PrettyDiff has been replaced with bundled parsers. See README for supported options."
+        },
+        "pretty-formatter.braceStyle": {
+          "type": "string",
+          "enum": [
+            "collapse",
+            "collapse-preserve-inline",
+            "expand",
+            "none"
+          ],
+          "default": "none",
+          "description": "Emulates JSBeautify's brace_style option using existing Pretty Diff options.",
+          "scope": "language-overridable",
+          "deprecationMessage": "Unused since 0.3.0. PrettyDiff has been replaced with bundled parsers. See README for supported options."
+        },
+        "pretty-formatter.braces": {
+          "type": "boolean",
+          "default": false,
+          "description": "Determines if opening curly braces will exist on the same line as their condition or be forced onto a new line.",
+          "scope": "language-overridable",
+          "deprecationMessage": "Unused since 0.3.0. PrettyDiff has been replaced with bundled parsers. See README for supported options."
+        },
+        "pretty-formatter.commentLine": {
+          "type": "boolean",
+          "default": false,
+          "description": "If a blank new line should be forced above comments.",
+          "scope": "language-overridable",
+          "deprecationMessage": "Unused since 0.3.0. PrettyDiff has been replaced with bundled parsers. See README for supported options."
+        },
+        "pretty-formatter.comments": {
+          "type": "boolean",
+          "default": false,
+          "description": "This will determine whether comments should always start at position 0 of each line or if comments should be indented according to the code.",
+          "scope": "language-overridable",
+          "deprecationMessage": "Unused since 0.3.0. PrettyDiff has been replaced with bundled parsers. See README for supported options."
+        },
+        "pretty-formatter.compressedCss": {
+          "type": "boolean",
+          "default": false,
+          "description": "If CSS should be beautified in a style where the properties and values are minifed for faster reading of selectors.",
+          "scope": "language-overridable",
+          "deprecationMessage": "Unused since 0.3.0. PrettyDiff has been replaced with bundled parsers. See README for supported options."
+        },
+        "pretty-formatter.correct": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically correct some sloppiness in code.",
+          "scope": "language-overridable",
+          "deprecationMessage": "Unused since 0.3.0. PrettyDiff has been replaced with bundled parsers. See README for supported options."
+        },
+        "pretty-formatter.cssInsertLines": {
+          "type": "boolean",
+          "default": false,
+          "description": "Inserts new line characters between every CSS code block.",
+          "scope": "language-overridable",
+          "deprecationMessage": "Unused since 0.3.0. PrettyDiff has been replaced with bundled parsers. See README for supported options."
+        },
+        "pretty-formatter.elseLine": {
+          "type": "boolean",
+          "default": false,
+          "description": "If else_line is true then the keyword 'else' is forced onto a new line.",
+          "scope": "language-overridable",
+          "deprecationMessage": "Unused since 0.3.0. PrettyDiff has been replaced with bundled parsers. See README for supported options."
+        },
+        "pretty-formatter.endComma": {
+          "type": "string",
+          "enum": [
+            "always",
+            "never",
+            "none"
+          ],
+          "default": "none",
+          "description": "If there should be a trailing comma in arrays and objects. Value multiline only applies to modes beautify and diff.",
+          "scope": "language-overridable"
+        },
+        "pretty-formatter.forceAttribute": {
+          "type": "boolean",
+          "default": false,
+          "description": "If all markup attributes should be indented each onto their own line.",
+          "scope": "language-overridable"
+        },
+        "pretty-formatter.forceIndent": {
+          "type": "boolean",
+          "default": false,
+          "description": "Will force indentation upon all content and tags without regard for the creation of new text nodes.",
+          "scope": "language-overridable",
+          "deprecationMessage": "Unused since 0.3.0. PrettyDiff has been replaced with bundled parsers. See README for supported options."
+        },
+        "pretty-formatter.formatArray": {
+          "type": "string",
+          "enum": [
+            "default",
+            "indent",
+            "inline"
+          ],
+          "default": "default",
+          "description": "Determines if all array indexes should be indented, never indented, or left to the default.",
+          "scope": "language-overridable",
+          "deprecationMessage": "Unused since 0.3.0. PrettyDiff has been replaced with bundled parsers. See README for supported options."
+        },
+        "pretty-formatter.formatObject": {
+          "type": "string",
+          "enum": [
+            "default",
+            "indent",
+            "inline"
+          ],
+          "default": "default",
+          "description": "Determines if all object keys should be indented, never indented, or left to the default.",
+          "scope": "language-overridable",
+          "deprecationMessage": "Unused since 0.3.0. PrettyDiff has been replaced with bundled parsers. See README for supported options."
+        },
+        "pretty-formatter.functionName": {
+          "type": "boolean",
+          "default": false,
+          "description": "If a space should follow a JavaScript function name.",
+          "scope": "language-overridable",
+          "deprecationMessage": "Unused since 0.3.0. PrettyDiff has been replaced with bundled parsers. See README for supported options."
+        },
+        "pretty-formatter.indentLevel": {
+          "type": "integer",
+          "default": 0,
+          "description": "How much indentation padding should be applied to beautification? This option is internally used for code that requires switching between libraries.",
+          "scope": "language-overridable",
+          "deprecationMessage": "Unused since 0.3.0. PrettyDiff has been replaced with bundled parsers. See README for supported options."
+        },
+        "pretty-formatter.indentSize": {
+          "type": "integer",
+          "default": 0,
+          "description": "Indent width. 0 uses the current editor document options, including tabs.",
+          "scope": "language-overridable",
+          "minimum": 0,
+          "maximum": 16
+        },
+        "pretty-formatter.methodChain": {
+          "type": "integer",
+          "default": 0,
+          "description": "When to break consecutively chained methods and properties onto separate lines. A negative value disables this option. A value of 0 ensures method chains are never broken.",
+          "scope": "language-overridable",
+          "deprecationMessage": "Unused since 0.3.0. PrettyDiff has been replaced with bundled parsers. See README for supported options."
+        },
+        "pretty-formatter.neverFlatten": {
+          "type": "boolean",
+          "default": false,
+          "description": "If destructured lists in script should never be flattend.",
+          "scope": "language-overridable",
+          "deprecationMessage": "Unused since 0.3.0. PrettyDiff has been replaced with bundled parsers. See README for supported options."
+        },
+        "pretty-formatter.newLine": {
+          "type": "boolean",
+          "default": true,
+          "description": "Insert an empty line at the end of output.",
+          "scope": "language-overridable"
+        },
+        "pretty-formatter.noCaseIndent": {
+          "type": "boolean",
+          "default": false,
+          "description": "If a case statement should receive the same indentation as the containing switch block.",
+          "scope": "language-overridable",
+          "deprecationMessage": "Unused since 0.3.0. PrettyDiff has been replaced with bundled parsers. See README for supported options."
+        },
+        "pretty-formatter.noLeadZero": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether leading 0s in CSS values immediately preceeding a decimal should be removed or prevented.",
+          "scope": "language-overridable",
+          "deprecationMessage": "Unused since 0.3.0. PrettyDiff has been replaced with bundled parsers. See README for supported options."
+        },
+        "pretty-formatter.objectSort": {
+          "type": "boolean",
+          "default": false,
+          "description": "Sorts markup attributes and properties by key name in script and style.",
+          "scope": "language-overridable",
+          "deprecationMessage": "Unused since 0.3.0. PrettyDiff has been replaced with bundled parsers. See README for supported options."
+        },
+        "pretty-formatter.preserve": {
+          "type": "integer",
+          "default": 2,
+          "description": "The maximum number of consecutive empty lines to retain.",
+          "scope": "language-overridable",
+          "deprecationMessage": "Unused since 0.3.0. PrettyDiff has been replaced with bundled parsers. See README for supported options."
+        },
+        "pretty-formatter.preserveComment": {
+          "type": "boolean",
+          "default": false,
+          "description": "Prevent comment reformatting due to option wrap.",
+          "scope": "language-overridable",
+          "deprecationMessage": "Unused since 0.3.0. PrettyDiff has been replaced with bundled parsers. See README for supported options."
+        },
+        "pretty-formatter.quoteConvert": {
+          "type": "string",
+          "enum": [
+            "double",
+            "none",
+            "single"
+          ],
+          "default": "none",
+          "description": "If the quotes of script strings or markup attributes should be converted to single quotes or double quotes.",
+          "scope": "language-overridable"
+        },
+        "pretty-formatter.space": {
+          "type": "boolean",
+          "default": true,
+          "description": "Inserts a space following the function keyword for anonymous functions.",
+          "scope": "language-overridable",
+          "deprecationMessage": "Unused since 0.3.0. PrettyDiff has been replaced with bundled parsers. See README for supported options."
+        },
+        "pretty-formatter.spaceClose": {
+          "type": "boolean",
+          "default": false,
+          "description": "Markup self-closing tags end will end with ' />' instead of '/>'.",
+          "scope": "language-overridable"
+        },
+        "pretty-formatter.styleguide": {
+          "type": "string",
+          "enum": [
+            "airbnb",
+            "crockford",
+            "google",
+            "jquery",
+            "jslint",
+            "mediawiki",
+            "mrdoob",
+            "none",
+            "standard",
+            "yandex"
+          ],
+          "default": "none",
+          "description": "Markup self-closing tags end will end with ' />' instead of '/>'.",
+          "scope": "language-overridable",
+          "deprecationMessage": "Unused since 0.3.0. PrettyDiff has been replaced with bundled parsers. See README for supported options."
+        },
+        "pretty-formatter.tagMerge": {
+          "type": "boolean",
+          "default": false,
+          "description": "Allows immediately adjacement start and end markup tags of the same name to be combined into a single self-closing tag.",
+          "scope": "language-overridable",
+          "deprecationMessage": "Unused since 0.3.0. PrettyDiff has been replaced with bundled parsers. See README for supported options."
+        },
+        "pretty-formatter.tagSort": {
+          "type": "boolean",
+          "default": false,
+          "description": "Sort child items of each respective markup parent element.",
+          "scope": "language-overridable",
+          "deprecationMessage": "Unused since 0.3.0. PrettyDiff has been replaced with bundled parsers. See README for supported options."
+        },
+        "pretty-formatter.ternaryLine": {
+          "type": "boolean",
+          "default": true,
+          "description": "If ternary operators in JavaScript ? and : should remain on the same line.",
+          "scope": "language-overridable",
+          "deprecationMessage": "Unused since 0.3.0. PrettyDiff has been replaced with bundled parsers. See README for supported options."
+        },
+        "pretty-formatter.unformatted": {
+          "type": "boolean",
+          "default": false,
+          "description": "If markup tags should have their insides preserved. This option is only available to markup and does not support child tokens that require a different lexer.",
+          "scope": "language-overridable",
+          "deprecationMessage": "Unused since 0.3.0. PrettyDiff has been replaced with bundled parsers. See README for supported options."
+        },
+        "pretty-formatter.variableList": {
+          "type": "string",
+          "enum": [
+            "each",
+            "list",
+            "none"
+          ],
+          "default": "none",
+          "description": "If consecutive JavaScript variables should be merged into a comma separated list or if variables in a list should be separated.",
+          "scope": "language-overridable",
+          "deprecationMessage": "Unused since 0.3.0. PrettyDiff has been replaced with bundled parsers. See README for supported options."
+        },
+        "pretty-formatter.vertical": {
+          "type": "boolean",
+          "default": false,
+          "description": "If lists of assignments and properties should be vertically aligned. This option is not used with the markup lexer.",
+          "scope": "language-overridable",
+          "deprecationMessage": "Unused since 0.3.0. PrettyDiff has been replaced with bundled parsers. See README for supported options."
+        },
+        "pretty-formatter.wrap": {
+          "type": "integer",
+          "default": 0,
+          "description": "Preferred print width. 0 uses 80 for Prettier and preserves Twig/HTML attribute wrapping.",
+          "scope": "language-overridable",
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "pretty-formatter.formatTimeout": {
+          "type": "integer",
+          "default": 5000,
+          "minimum": 100,
+          "maximum": 30000,
+          "scope": "language-overridable",
+          "description": "Maximum formatting time in milliseconds. A timeout leaves the source unchanged."
+        },
+        "pretty-formatter.embeddedFormatting": {
+          "type": "boolean",
+          "default": true,
+          "scope": "language-overridable",
+          "description": "Format safe embedded JavaScript and CSS in Twig/HTML."
         }
+      }
     }
+  },
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": true
+    },
+    "virtualWorkspaces": true
+  }
 }

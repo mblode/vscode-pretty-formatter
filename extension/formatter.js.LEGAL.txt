@@ -1,0 +1,16 @@
+Bundled license information:
+
+isobject/index.js:
+  /*!
+   * isobject <https://github.com/jonschlinkert/isobject>
+   *
+   * Copyright (c) 2014-2015, Jon Schlinkert.
+   * Licensed under the MIT License.
+   */
+
+line-column/lib/line-column.js:
+  /**
+   * line-column - Convert efficiently index to/from line-column in a string
+   * @module  lineColumn
+   * @license MIT
+   */
