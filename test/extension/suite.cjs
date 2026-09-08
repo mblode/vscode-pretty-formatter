@@ -90,6 +90,11 @@ exports.run = async () => {
     await format();
     assert.equal(d.getText(), first, language + " idempotence");
   }
+  for (const source of ["{% if x %}\n{{a+b}}\n{% endfor %}", "   {% custom %}\n{{a+b}}\n{% endcustom %}"]) {
+    const d = await open("twig", source);
+    await format();
+    assert.equal(d.getText(), source, "Twig parser safety must reach the provider");
+  }
   const bad = await open("typescript", "const x = {");
   await format();
   assert.equal(bad.getText(), "const x = {");

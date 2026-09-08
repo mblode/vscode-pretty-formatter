@@ -148050,6 +148050,164 @@ var require_lexer3 = __commonJS({
   }
 });
 
+// src/formatter/parser.js
+var require_parser7 = __commonJS({
+  "src/formatter/parser.js"(exports2, module2) {
+    "use strict";
+    var { scan, SyntaxError: SyntaxError2 } = require_lexer3();
+    var BLOCKS = new Set(
+      "if for block macro set apply filter autoescape with embed sandbox spaceless trans cache switch nav ifchildren component capture".split(
+        " "
+      )
+    );
+    var STATEMENTS = new Set(
+      "extends include import from use do flush deprecated props types".split(" ")
+    );
+    var BRANCHES = /* @__PURE__ */ new Set(["else", "elseif", "case", "default"]);
+    function isOpening(info, paired) {
+      if (!BLOCKS.has(info.name) && !paired.has(info.name)) return false;
+      if (info.name === "set" && info.atoms.some((a4) => a4.text === "="))
+        return false;
+      if (info.name === "block" && info.atoms.length > 2) return false;
+      return true;
+    }
+    function parse4(source2) {
+      let tokens;
+      try {
+        tokens = scan(source2);
+      } catch (error) {
+        if (!(error instanceof SyntaxError2)) throw error;
+        return {
+          type: "document",
+          start: 0,
+          end: source2.length,
+          tokens: [{ type: "error", start: 0, end: source2.length, raw: source2 }],
+          children: [],
+          opaque: [],
+          diagnostics: [
+            {
+              code: "lexical",
+              start: error.offset,
+              end: source2.length,
+              message: error.message
+            }
+          ],
+          lexicalError: error
+        };
+      }
+      const document2 = {
+        type: "document",
+        start: 0,
+        end: source2.length,
+        tokens,
+        children: [],
+        opaque: [],
+        diagnostics: []
+      };
+      const paired = new Set(
+        tokens.filter((t37) => t37.type === "tag" && t37.info.name.startsWith("end")).map((t37) => t37.info.name.slice(3))
+      );
+      const stack2 = [];
+      let children = document2.children;
+      const diagnostic = (token2, code, message) => document2.diagnostics.push({
+        code,
+        start: token2.start,
+        end: token2.end,
+        message
+      });
+      for (const token2 of tokens) {
+        if (token2.type !== "tag") {
+          children.push(token2);
+          continue;
+        }
+        const { name } = token2.info;
+        if (name.startsWith("end")) {
+          const frame = stack2[stack2.length - 1];
+          if (!frame || frame.node.name !== name.slice(3)) {
+            diagnostic(token2, "unexpected-end", `Unexpected ${name}`);
+            children.push(token2);
+            continue;
+          }
+          token2.role = "close";
+          const previousBranch = frame.node.branches.at(-1);
+          if (previousBranch) previousBranch.end = token2.start;
+          frame.node.close = token2;
+          frame.node.end = token2.end;
+          if (frame.node.unknown)
+            document2.opaque.push({ start: frame.node.start, end: token2.end });
+          stack2.pop();
+          children = frame.parent;
+        } else if (BRANCHES.has(name)) {
+          const frame = stack2[stack2.length - 1];
+          const allowed = frame && (name === "elseif" && frame.node.name === "if" || name === "else" && ["if", "for"].includes(frame.node.name) || ["case", "default"].includes(name) && frame.node.name === "switch");
+          if (!allowed || frame.terminal) {
+            diagnostic(token2, "unexpected-branch", `Unexpected ${name}`);
+            children.push(token2);
+            continue;
+          }
+          frame.terminal = name === "else" || name === "default";
+          token2.role = "branch";
+          const previousBranch = frame.node.branches.at(-1);
+          if (previousBranch) previousBranch.end = token2.start;
+          const branch = {
+            type: "branch",
+            start: token2.start,
+            end: source2.length,
+            open: token2,
+            children: []
+          };
+          frame.node.branches.push(branch);
+          children = branch.children;
+        } else if (isOpening(token2.info, paired)) {
+          if (stack2.length >= 256)
+            throw new Error("Twig nesting exceeds 256 levels");
+          token2.role = "open";
+          const node = {
+            type: "block",
+            name,
+            start: token2.start,
+            end: source2.length,
+            open: token2,
+            close: null,
+            unknown: !BLOCKS.has(name),
+            children: [],
+            branches: []
+          };
+          children.push(node);
+          stack2.push({ node, parent: children, terminal: false });
+          children = node.children;
+        } else {
+          children.push(token2);
+          if (!STATEMENTS.has(name) && !["set", "block"].includes(name))
+            document2.opaque.push({ start: token2.start, end: token2.end });
+        }
+      }
+      for (const { node } of stack2)
+        diagnostic(node.open, "unclosed-block", `Unclosed ${node.name} block`);
+      document2.opaque.sort((a4, b6) => a4.start - b6.start || b6.end - a4.end);
+      const merged = [];
+      for (const region of document2.opaque) {
+        const previous = merged[merged.length - 1];
+        if (previous && region.start <= previous.end)
+          previous.end = Math.max(previous.end, region.end);
+        else merged.push({ ...region });
+      }
+      document2.opaque = merged;
+      return document2;
+    }
+    function isOpaque(regions, start, end = start) {
+      let lo6 = 0, hi11 = regions.length;
+      while (lo6 < hi11) {
+        const mid = lo6 + hi11 >>> 1;
+        if (regions[mid].end <= start) lo6 = mid + 1;
+        else hi11 = mid;
+      }
+      return lo6 < regions.length && (end === start ? regions[lo6].start <= start : regions[lo6].start < end);
+    }
+    module2.exports = { parse: parse4, isOpaque };
+  }
+});
+
 // src/formatter/embedded.js
 var require_embedded = __commonJS({
   "src/formatter/embedded.js"(exports2, module2) {
@@ -148232,24 +148390,13 @@ var require_preservation = __commonJS({
 var require_format = __commonJS({
   "src/formatter/format.js"(exports2, module2) {
     "use strict";
-    var {
-      scan,
-      twigStart,
-      twigEnd,
-      twigInfo,
-      expressionParts
-    } = require_lexer3();
+    var { twigStart, twigEnd, twigInfo } = require_lexer3();
     var VOID = new Set(
       "area base br col embed hr img input link meta param source track wbr".split(
         " "
       )
     );
-    var BLOCKS = new Set(
-      "if for block macro set apply filter autoescape with embed sandbox spaceless trans cache switch nav ifchildren component capture".split(
-        " "
-      )
-    );
-    var BRANCHES = /* @__PURE__ */ new Set(["else", "elseif", "case", "default"]);
+    var { parse: parse4, isOpaque } = require_parser7();
     function optionsFor(input = {}) {
       const integer = (value, fallback, min, max) => Number.isInteger(value) ? Math.min(max, Math.max(min, value)) : fallback;
       return {
@@ -148369,13 +148516,6 @@ var require_format = __commonJS({
     var indentation = (depth, options7) => (options7.insertSpaces ? " ".repeat(options7.tabSize) : "	").repeat(
       Math.max(0, Math.min(256, depth))
     );
-    function isOpening(info, paired) {
-      if (!BLOCKS.has(info.name) && !paired.has(info.name)) return false;
-      if (info.name === "set" && info.atoms.some((a4) => a4.text === "="))
-        return false;
-      if (info.name === "block" && info.atoms.length > 2) return false;
-      return true;
-    }
     function mergeBranches(branches) {
       const result = [];
       const length = Math.min(...branches.map((b6) => b6.length));
@@ -148383,18 +148523,16 @@ var require_format = __commonJS({
         result.push(new Set(branches.flatMap((b6) => [...b6[i]])));
       return result;
     }
-    function layout(tokens) {
+    function layout(tokens, opaque = []) {
       let html = [];
       const twig = [];
-      const paired = new Set(
-        tokens.filter((t37) => t37.type === "tag" && t37.info.name.startsWith("end")).map((t37) => t37.info.name.slice(3))
-      );
       const depth = () => html.length + twig.length + twig.filter((x7) => x7.inCase).length;
       return tokens.map((token2) => {
         let indent5 = depth();
+        if (isOpaque(opaque, token2.start)) return { ...token2, depth: indent5 };
         if (token2.type === "tag") {
           const info = token2.info;
-          if (info.name.startsWith("end")) {
+          if (token2.role === "close") {
             const name = info.name.slice(3);
             const index = twig.findLastIndex((x7) => x7.name === name);
             if (index >= 0) {
@@ -148404,14 +148542,14 @@ var require_format = __commonJS({
               twig.length = index;
               indent5 = Math.min(frame.html.length, html.length) + twig.length + twig.filter((x7) => x7.inCase).length;
             }
-          } else if (BRANCHES.has(info.name) && twig.length) {
+          } else if (token2.role === "branch" && twig.length) {
             const frame = twig[twig.length - 1];
             frame.branches.push(html);
             html = frame.html.slice();
             frame.inCase = false;
             indent5 = depth() - (["case", "default"].includes(info.name) ? 0 : 1);
             frame.inCase = ["case", "default"].includes(info.name);
-          } else if (isOpening(info, paired)) {
+          } else if (token2.role === "open") {
             if (twig.length >= 256)
               throw new Error("Twig nesting exceeds 256 levels");
             twig.push({
@@ -148468,16 +148606,21 @@ var require_format = __commonJS({
       if (Buffer.byteLength(source2, "utf8") > 2 * 1024 * 1024)
         throw new Error("Twig formatting is limited to 2 MiB per document");
       const options7 = optionsFor(input);
-      const tokens = layout(scan(source2));
+      const tree = parse4(source2);
+      if (tree.lexicalError) throw tree.lexicalError;
+      if (tree.diagnostics.length) return [];
+      const tokens = layout(tree.tokens, tree.opaque);
       const eol = options7.eol || (source2.includes("\r\n") ? "\r\n" : "\n");
       options7.eol = eol;
       const edits = [];
       const add = (start, end, text) => {
         if (range2 && (start < range2.start || end > range2.end)) return;
+        if (isOpaque(tree.opaque, start, end)) return;
         const edit = minimalEdit(source2, start, end, text);
         if (edit) edits.push(edit);
       };
       for (const token2 of tokens) {
+        if (isOpaque(tree.opaque, token2.start)) continue;
         let formatted = token2.raw;
         if (token2.type === "tag" || token2.type === "output")
           formatted = formatTwig(token2.raw);
@@ -148501,12 +148644,13 @@ var require_format = __commonJS({
         while (owner < tokens.length && tokens[owner].end <= content) owner++;
         const token2 = tokens[owner];
         if (!token2 || token2.kind === "ignore") continue;
+        if (isOpaque(tree.opaque, content)) continue;
         if (token2.type !== "text" && token2.start !== content) continue;
         add(start, content, indentation(token2.depth, options7));
       }
       if (!range2 && options7.newLine && source2.length && !source2.endsWith("\n")) {
         const last2 = tokens[tokens.length - 1];
-        if (last2 && last2.type !== "text" && last2.kind !== "ignore")
+        if (last2 && last2.type !== "text" && last2.kind !== "ignore" && !isOpaque(tree.opaque, source2.length - 1))
           add(source2.length, source2.length, eol);
       }
       edits.sort((a4, b6) => a4.start - b6.start || a4.end - b6.end);

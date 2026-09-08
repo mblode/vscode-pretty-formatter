@@ -1,3 +1,9 @@
+## 0.3.1
+
+- Parse Twig block structure before formatting; mismatched or incomplete blocks now leave the document unchanged.
+- Preserve unknown custom tags and paired bodies, including indentation, while formatting supported surrounding syntax.
+- Keep conditional HTML wrappers working across separate Twig blocks; add shared parser regression coverage.
+
 ## 0.3.0
 
 - Fix missing activation events, formatter registration leaks and live per-document disable/ignore settings.
