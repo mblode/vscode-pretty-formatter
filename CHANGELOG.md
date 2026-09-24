@@ -1,3 +1,7 @@
+## Unreleased
+
+- Twig: keep the author's padding inside hash braces, so `with { "content": "x" }` is no longer tightened to `{"content": "x"}` (mblode/vscode-twig-language-2#124).
+
 ## 0.3.1
 
 - Parse Twig block structure before formatting; mismatched or incomplete blocks now leave the document unchanged.
