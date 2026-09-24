@@ -1,4 +1,4 @@
-## Unreleased
+## 0.3.2
 
 - Twig: keep the author's padding inside hash braces, so `with { "content": "x" }` is no longer tightened to `{"content": "x"}` (mblode/vscode-twig-language-2#124).
 
