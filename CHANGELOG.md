@@ -1,3 +1,10 @@
+## 0.3.3
+
+- CFML: treat tags with no end tag (`<cfset>`, `<cfparam>`, `<cfreturn>`, `<cfinclude>` and others) as void, place `<cfelse>`/`<cfelseif>` at the `<cfif>` level, and keep every byte inside `<cf...>` tags, so `<cfset x = 1>` is no longer rewritten to `<cfset x=1>` (#14).
+- EEX, ERB and EJS: indent the bodies of `do ... end`, `fn ... -> ... end`, `if`/`unless`/`case ... end` and `{ ... }` blocks, with `else`, `elsif`, `when` and `->` clauses at block level.
+- FreeMarker: indent the bodies of paired directives (`<#list>`, `<#if>`, `<#macro>`, `<#switch>`, `<@macro>...</@macro>` and others), with `<#else>`, `<#elseif>`, `<#sep>` and `<#case>` at directive level. `<#noparse>` bodies are preserved.
+- Template dialects: keep the space in `value=x />` so `/` does not join an unquoted value, and leave `{{ }}`/`{% %}` text (Vue, Angular, Handlebars) untouched. Unbalanced blocks leave the document unchanged.
+
 ## 0.3.2
 
 - Twig: keep the author's padding inside hash braces, so `with { "content": "x" }` is no longer tightened to `{"content": "x"}` (mblode/vscode-twig-language-2#124).

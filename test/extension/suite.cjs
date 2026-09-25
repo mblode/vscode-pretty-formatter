@@ -48,7 +48,12 @@ exports.run = async () => {
   assert(extension.isActive, "onLanguage activation must work");
   const format = () =>
     vscode.commands.executeCommand("editor.action.formatDocument");
-  await format();
+  // Newer VS Code can run the first format before the provider registration is visible; retry only this warm-up.
+  for (let i = 0; i < 50 && doc.getText() !== "const x: number = 1;\n"; i++) {
+    await format();
+    if (doc.getText() !== "const x: number = 1;\n")
+      await new Promise((r) => setTimeout(r, 100));
+  }
   assert.equal(doc.getText(), "const x: number = 1;\n");
   const twig = await open("twig", "<div>\n{{x}}\n</div>");
   await format();

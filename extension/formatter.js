@@ -147998,7 +147998,7 @@ var require_lexer3 = __commonJS({
               closing: !!match2[1],
               selfClosing: /\/\s*>$/.test(source2.slice(i, end))
             };
-          if (match2 && !extra.closing && !extra.selfClosing && ["script", "style", "pre", "textarea"].includes(extra.name)) {
+          if (match2 && !extra.closing && !extra.selfClosing && ["script", "style", "mj-style", "pre", "textarea"].includes(extra.name)) {
             const re12 = new RegExp("</" + extra.name + "\\s*>", "ig");
             re12.lastIndex = end;
             const close = re12.exec(source2);
@@ -148009,7 +148009,8 @@ var require_lexer3 = __commonJS({
               bodyStart: end,
               bodyEnd: close.index,
               closingStart: close.index,
-              kind: extra.name
+              // MJML's <mj-style> body is CSS.
+              kind: extra.name === "mj-style" ? "style" : extra.name
             };
             end = re12.lastIndex;
             type = "raw";
@@ -148514,8 +148515,11 @@ var require_format = __commonJS({
       const last2 = chunks.length - 1;
       const closing = /\/?\s*>$/.exec(chunks[last2]);
       if (!closing) return raw;
-      const end = closing[0].replace(/\s/g, "");
-      chunks[last2] = chunks[last2].slice(0, -closing[0].length);
+      const unquoted = (chunk2) => /=(?!["'])[^"'\s]*$/.test(chunk2.replace(/\{[{%#][\s\S]*?[}%#]\}/g, "_"));
+      let end = closing[0].replace(/\s/g, "");
+      const before = chunks[last2].slice(0, -closing[0].length);
+      if (end === "/>" && before && unquoted(before)) end = ">";
+      chunks[last2] = chunks[last2].slice(0, -end.length);
       if (!chunks[last2]) chunks.pop();
       for (let j9 = 1; j9 < chunks.length; j9++) {
         if (chunks[j9] === "=" || chunks[j9].startsWith("=") || chunks[j9 - 1].endsWith("=")) {
@@ -148523,7 +148527,7 @@ var require_format = __commonJS({
           chunks.splice(j9--, 1);
         }
       }
-      const inline = chunks.join(" ") + (end === "/>" && options7.spaceClose ? " " : "") + end;
+      const inline = chunks.join(" ") + (end === "/>" && (options7.spaceClose || unquoted(chunks[chunks.length - 1] || "")) ? " " : "") + end;
       const indent5 = indentation(depth, options7), inner = indentation(depth + 1, options7);
       const multiline = chunks.length > 1 && (options7.forceAttribute || /\r?\n/.test(raw) || options7.wrap > 0 && depth * options7.tabSize + inline.length > options7.wrap);
       if (!multiline) return inline;
@@ -148699,18 +148703,127 @@ var require_template = __commonJS({
   "src/template.js"(exports2, module2) {
     "use strict";
     var { formatEdits, applyEdits } = require_format();
-    function projectTemplate(source2) {
+    var { scan } = require_lexer3();
+    var words = (s) => new Set(s.split(" "));
+    var CF_VOID = words(
+      "abort applet application argument associate break chartdata collection content continue cookie dbinfo directory dump error exit feed file flush ftp gridcolumn gridrow header httpparam image import include index input invokeargument ldap location log loginuser logout mailparam object objectcache param pdfparam pop procparam procresult property queryparam registry rethrow return schedule set setting sleep slider spreadsheet trace wddx zipparam"
+    );
+    var CF_PAIRED = words(
+      "if loop output query function component interface try catch finally switch case defaultcase savecontent lock mail mailpart silent document documentitem documentsection form select xml while timer chart chartseries storedproc table"
+    );
+    var FTL_PAIRED = words(
+      "if list items macro function switch attempt compress escape noescape autoesc noautoesc outputformat"
+    );
+    var FTL_VOID = words(
+      "include import return break continue nested recurse visit flush stop t lt rt nt ftl setting fallback"
+    );
+    var FTL_BRANCH = {
+      else: ["#if", "#list"],
+      elseif: ["#if"],
+      sep: ["#list", "#items"],
+      recover: ["#attempt"],
+      case: ["#switch"],
+      on: ["#switch"],
+      default: ["#switch"]
+    };
+    function role(raw, language) {
+      if (language === "cfm" || language === "cfml") {
+        const m7 = /^<(\/?)cf([\w-]*)/i.exec(raw);
+        if (!m7) return null;
+        const name = m7[2].toLowerCase();
+        if (m7[1]) return { type: "close", name };
+        if (name === "else" || name === "elseif")
+          return { type: "branch", parents: ["if"] };
+        if (/\/\s*>$/.test(raw) || CF_VOID.has(name)) return null;
+        return { type: "open", name, required: CF_PAIRED.has(name) };
+      }
+      if (language === "ftl") {
+        const m7 = /^<(\/?)([#@])([\w.:-]*)/.exec(raw);
+        if (!m7 || raw.startsWith("<#--")) return null;
+        const bare = m7[3].toLowerCase(), name = m7[2] + bare;
+        if (m7[1]) return { type: "close", name };
+        if (m7[2] === "#" && Object.hasOwn(FTL_BRANCH, bare))
+          return {
+            type: "branch",
+            parents: FTL_BRANCH[bare],
+            style: ["case", "on", "default"].includes(bare) ? "case" : "if"
+          };
+        if (/\/\s*>$/.test(raw) || m7[2] === "#" && FTL_VOID.has(bare))
+          return null;
+        return {
+          type: "open",
+          name,
+          required: m7[2] === "@" || FTL_PAIRED.has(bare)
+        };
+      }
+      if (!["eex", "erb", "ejs"].includes(language) || !raw.startsWith("<%"))
+        return null;
+      if (/^<%[%#]|^<%!--/.test(raw)) return null;
+      const code = raw.slice(2, -2).replace(/^[=\-_]+|[-_=]$/g, "").trim();
+      const open = (name) => ({ type: "open", name, required: true });
+      const branch = (parents, style = "if") => ({
+        type: "branch",
+        parents,
+        style
+      });
+      if (language === "eex") {
+        if (/^end\b/.test(code)) return { type: "close", name: "end" };
+        if (/^(?:else|rescue|catch|after)$/.test(code)) return branch(["end"]);
+        if (/\bfn\b[\s\S]*->$|\bdo$/.test(code)) return open("end");
+        if (/->$/.test(code)) return branch(["end"], "case");
+        return null;
+      }
+      if (language === "erb") {
+        if (/^end\b/.test(code)) return { type: "close", name: "end" };
+        if (/^\}/.test(code)) return { type: "close", name: "}" };
+        if (/^(?:else|elsif|when|in|rescue|ensure)\b/.test(code))
+          return branch(["end"]);
+        if (/\bend$/.test(code)) return null;
+        if (/^(?:if|unless|while|until|for|case|begin)\b/.test(code) || /\bdo(?:\s*\|[^|]*\|)?$/.test(code))
+          return open("end");
+        if (/\{(?:\s*\|[^|]*\|)?$/.test(code)) return open("}");
+        return null;
+      }
+      if (/^\}/.test(code))
+        return /\{$/.test(code) ? branch(["}"]) : { type: "close", name: "}" };
+      return /\{$/.test(code) ? open("}") : null;
+    }
+    function structure(items) {
+      const stack2 = [];
+      for (const item of items) {
+        const r5 = item.role;
+        if (r5.type === "open") {
+          stack2.push(item.frame = { ...r5, item, style: null });
+          continue;
+        }
+        const target = r5.type === "close" ? (f4) => f4.name === r5.name || r5.name === "@" && f4.name[0] === "@" : (f4) => r5.parents.includes(f4.name);
+        while (stack2.length && !target(stack2.at(-1)) && !stack2.at(-1).required)
+          stack2.pop().item.frame = null;
+        const frame = stack2.at(-1);
+        if (!frame || !target(frame)) throw new Error("Unbalanced template blocks");
+        item.frame = frame;
+        if (r5.type === "close") stack2.pop();
+        else if (frame.style && frame.style !== r5.style)
+          throw new Error("Mixed template branch styles");
+        else frame.style = r5.style;
+      }
+      for (const frame of stack2.reverse()) {
+        if (frame.required) throw new Error("Unclosed template block");
+        frame.item.frame = null;
+      }
+    }
+    function projectTemplate(source2, language) {
       let prefix = "PRETTY_OPAQUE_";
       while (source2.includes(prefix)) prefix += "X";
       const replacements = [];
       const mask = (raw, kind = "comment") => {
         const id3 = prefix + replacements.length;
         const placeholder = kind === "output" ? `{{ ${id3} }}` : `{# ${id3} #}`;
-        replacements.push({ raw, placeholder });
+        replacements.push({ raw, placeholder, id: id3, role: role(raw, language) });
         return placeholder;
       };
       let result = source2.replace(
-        /<cfscript\b[^>]*>[\s\S]*?<\/cfscript\s*>/gi,
+        /<cfscript\b[^>]*>[\s\S]*?<\/cfscript\s*>|<#noparse\b[^>]*>[\s\S]*?<\/#noparse\s*>/gi,
         (raw) => mask(raw)
       );
       result = result.replace(
@@ -148722,10 +148835,34 @@ var require_template = __commonJS({
       );
       if (/<%|<\/?[#@]|\$\{/.test(result))
         throw new Error("Incomplete template delimiter");
+      if (language === "cfm" || language === "cfml")
+        result = result.replace(
+          /<\/?cf[\w-]*(?:"[^"]*"|'[^']*'|[^'">])*>/gi,
+          (raw) => mask(raw)
+        );
+      const own3 = new Set(replacements.map((r5) => r5.placeholder));
+      result = result.replace(
+        /\{\{[\s\S]*?\}\}|\{%[\s\S]*?%\}|\{#[\s\S]*?#\}/g,
+        (raw) => own3.has(raw) ? raw : mask(raw)
+      );
+      const byPlaceholder = new Map(replacements.map((r5) => [r5.placeholder, r5]));
+      const tokens = scan(result);
+      structure(tokens.map((t37) => byPlaceholder.get(t37.raw)).filter((r5) => r5?.role));
+      result = tokens.map((t37) => {
+        const r5 = byPlaceholder.get(t37.raw);
+        if (r5?.frame) {
+          const kind = r5.frame.style === "case" ? "switch" : "if";
+          r5.placeholder = r5.role.type === "open" ? `{% ${kind} ${r5.id} %}` : r5.role.type === "close" ? `{% end${kind} ${r5.id} %}` : `{% ${kind === "switch" ? "case" : "elseif"} ${r5.id} %}`;
+          return r5.placeholder;
+        }
+        if (t37.type === "html" && t37.selfClosing && /(?:=\s*[^\s"'=<>`]+|[}#]\})\s+\/>$/.test(t37.raw))
+          return mask(t37.raw);
+        return t37.raw;
+      }).join("");
       return {
         text: result,
         restore(output) {
-          for (const { raw, placeholder } of replacements) {
+          for (const { raw, placeholder } of replacements.slice().reverse()) {
             if (output.split(placeholder).length !== 2)
               throw new Error("Template placeholder changed");
             output = output.replace(placeholder, () => raw);
@@ -148735,7 +148872,7 @@ var require_template = __commonJS({
       };
     }
     async function formatTemplate(source2, options7) {
-      const projection = projectTemplate(source2);
+      const projection = projectTemplate(source2, options7.language);
       return projection.restore(
         applyEdits(
           projection.text,
